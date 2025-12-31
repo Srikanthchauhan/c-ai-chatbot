@@ -57,6 +57,7 @@ export const getCurrentUser = async () => {
 }
 
 export const onAuthStateChange = (callback) => {
+  if (!supabase) return { data: { subscription: { unsubscribe: () => {} } } }
   return supabase.auth.onAuthStateChange(callback)
 }
 
