@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    html {
+      background: #000;
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ai Chatbot - Advanced Answer Engine powered by AI" />
+  <title>Ai Chatbot</title>
+  <script>
+    (function () {
+      const KEY = 'chatbot_primary_tab';
+      const TAB_ID = Math.random().toString(36).substring(7);
+      const isDuplicate = () => {
+        try {
+          const active = JSON.parse(localStorage.getItem(KEY) || '{}');
+          return active.id && active.id !== TAB_ID && (Date.now() - active.time < 3000);
+        } catch (e) { return false; }
+      };
+
+      if (isDuplicate()) {
+        window.stop();
+        if (document.documentElement) document.documentElement.innerHTML = "";
+        window.close();
+        setTimeout(() => { window.location.href = 'about:blank'; }, 10);
+      } else {
+        const heartbeat = () => {
+          try {
+            localStorage.setItem(KEY, JSON.stringify({ id: TAB_ID, time: Date.now() }));
+          } catch (e) { }
+        };
+        heartbeat();
+        setInterval(heartbeat, 1000);
+        window.addEventListener('beforeunload', () => {
+          try {
+            const active = JSON.parse(localStorage.getItem(KEY) || '{}');
+            if (active.id === TAB_ID) localStorage.removeItem(KEY);
+          } catch (e) { }
+        });
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
