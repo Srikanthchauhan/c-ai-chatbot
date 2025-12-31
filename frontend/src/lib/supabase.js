@@ -4,10 +4,14 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Only create client if credentials are provided
+export const supabase = (supabaseUrl && supabaseAnonKey) 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
 // Auth helper functions
 export const signUpWithEmail = async (email, password, fullName) => {
+  if (!supabase) return { data: null, error: { message: 'Auth not configured' } }
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -21,6 +25,7 @@ export const signUpWithEmail = async (email, password, fullName) => {
 }
 
 export const signInWithEmail = async (email, password) => {
+  if (!supabase) return { data: null, error: { message: 'Auth not configured' } }
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -29,6 +34,7 @@ export const signInWithEmail = async (email, password) => {
 }
 
 export const signInWithGoogle = async () => {
+  if (!supabase) return { data: null, error: { message: 'Auth not configured' } }
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -39,11 +45,13 @@ export const signInWithGoogle = async () => {
 }
 
 export const signOut = async () => {
+  if (!supabase) return { error: { message: 'Auth not configured' } }
   const { error } = await supabase.auth.signOut()
   return { error }
 }
 
 export const getCurrentUser = async () => {
+  if (!supabase) return null
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
